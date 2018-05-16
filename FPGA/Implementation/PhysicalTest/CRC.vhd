@@ -94,10 +94,10 @@ BEGIN
 					f_decode <= true;
 					fsm <= fsm + 1;
 				WHEN x"4" =>
-					IF (decodedword = x"AAAA") THEN -- Test decoder, single data bit error: Check if data was corrected
+					IF (CRCPass = '1') THEN -- Test decoder, single data bit error: Check if CRC passed
 						led(2) <= '1';
 					END IF;
-					IF (CRCPass = '1') THEN -- Test decoder, single data bit error: Check if CRC passed
+					IF (decodedword = x"AAAA") THEN -- Test decoder, single data bit error: Check if data was corrected
 						led(3) <= '1';
 					END IF;
 					Currentword(25) <= Encodedword(25) XOR '1';	-- Revert databit 10 til original
@@ -105,10 +105,10 @@ BEGIN
 					f_decode <= true;
 					fsm <= fsm + 1;
 				WHEN x"5" =>
-					IF (decodedword = x"AAAA") THEN -- Ensure data hasn't changed due to CRC error
+					IF (CRCPASS <= '1') THEN	-- Test decoder, single CRC bit error
 						led(4) <= '1';
 					END IF;
-					IF (CRCPASS <= '1') THEN	-- Test decoder, single CRC bit error
+					IF (decodedword = x"AAAA") THEN -- Ensure data hasn't changed due to CRC error
 						led(5) <= '1';
 					END IF;
 					Currentword(25) <= Currentword(25) XOR '1';	-- Flip databit 10, so two bits are in error (Data + CRC)
@@ -119,7 +119,7 @@ BEGIN
 						led(6) <= '1';
 					END IF;
 				WHEN others =>
-					LED <= "10101010";
+					led(7) <= "1";	-- Indicates something went wrong 
 			END CASE;
 		END IF;
 	END IF;
