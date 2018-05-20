@@ -22,3 +22,4 @@ def GenCCITT_CRC16(Buffer):
             crcsum &= 0x0000FFFF
             crcsum ^= polynom
    return(crcsum)
+# Source: https://www.python-forum.de/viewtopic.php?t=958
