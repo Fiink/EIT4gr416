@@ -79,6 +79,7 @@ while x <len(outputer):
         outputer[x]=ser.read()
         if outputer[x]==b'\xd9':
                 if(outputer[x-1]==b'\xff'):
+                        outputer[x+1]=ser.read()
                         break
                 elif(outputer[x-2]==b'\xff'):
                         outputer[x+1]=ser.read()
