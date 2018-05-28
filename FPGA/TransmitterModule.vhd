@@ -1,9 +1,32 @@
+﻿-- The transmitter FPGA module is not complete, since the FPGA 
+-- could never be connected to either the Raspberry Pi or the Arduino.
+-- The most recent working code can however be seen below, which is functional
+-- in simulations. 
+-- The module does however process the received data correctly, including appending the correct 
+-- CRC bits.
+-- 
+-- The current code, as seen below, has the following features / important characteristics:
+--		- CRC calculation
+--		- Internal RAM (currently 1001 x 32 to decrease the time taken to synthesize for tests)
+--		- Finite State Machine
+--			- Receiver FSM, receives, encodes and stores data in RAM
+--			- Transmitter FSM, loads data from RAM and transmits this (Note: UART does still not work as intended)
+--
+-- The following features has been tested individually, but are not implemented in this code.
+--		- Physical SRAM implementation (250.000 x 8)
+--			- The various buffers must be changed to accomedate for the new RAM size (32 => 8)
+--
+-- This file is expected to be updated with a proper UART implementation, 
+-- as well as use of the on-board SRAM using the corresponding I/O pins. 
+
+
+
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-ENTITY Encoder IS
+ENTITY TransmitterModule IS
 	PORT 
 	(  CLK      : IN STD_LOGIC;
 		input    : IN STD_LOGIC;
@@ -12,9 +35,9 @@ ENTITY Encoder IS
 		output   : OUT STD_LOGIC := '1'
 		
 	);
-END Encoder;
+END TransmitterModule;
 
-ARCHITECTURE Behavioral OF Encoder IS
+ARCHITECTURE Behavioral OF TransmitterModule IS
 	------
 	-- Memory Definitions
 	------
