@@ -15,3 +15,4 @@ The files will be categorized by which section they belong to in the report. The
 ## Arduino
 This folder will include the .ino files used to program the Arduino.
 The files will be categorized by which section they belong to in the report. The most up-to-date versions of the main programs are found in the main folder (i.e. EIT4gr16/Arduino).
+This project uses the library RF24 by user TMRh20, which can be found in the following repository: https://github.com/nRF24/RF24
