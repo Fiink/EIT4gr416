@@ -1,7 +1,0 @@
--- Since the transmitter FPGA module was never implemented, the implementation of the 
--- receiver FPGA module was never begun. 
--- However, it is known that a similar design to the transmitter FPGA module is suitable. The 
--- main difference is that the receiver module has to check the code word instead, possibly 
--- enabling an additional pin if an error is detected. 
--- 
--- This code is expected to be written and implemented for the exam.
