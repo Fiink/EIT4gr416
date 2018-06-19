@@ -17,7 +17,6 @@
 *************************************/
 
 #include <SPI.h>
-#include <printf.h>
 #include "RF24.h"
 
 /************* USER CONFIG ****************/
@@ -32,11 +31,10 @@ int dts = 4;    //Size of data in byte for transfor
 byte data[4];   //Storing place for received data
 
 void setup() {
-  Serial.begin(115200);
-  printf_begin();   
+  Serial.begin(115200); 
 
   radio.begin();
-  radio.setChannel(100);    //Set the channel the modules communicat at
+  radio.setChannel(83);                 //Set the channel the modules communicat at
   radio.setPALevel(RF24_PA_MAX);        //Set the power level in dB, MAX=0 dB, HIGH=-6 dB, LOW=-12 dB, MIN=-18 dB
   radio.setDataRate(RF24_1MBPS);       //max 1Mbps if ACK ar disabled, Settings 1MBPS or 250KBPS
   radio.setAutoAck(0);                 //dissable ACK if value = '0'

@@ -7,8 +7,9 @@ import binascii
 from picamera import PiCamera
 import struct
 import math
+start = time.time()
 
-start = time.time()  #Log current time
+
 
 camera = PiCamera()
 camera.resolution=(512,512)
@@ -45,9 +46,64 @@ start=time.time()
 fileRead = open(path,'r+b')
 inputer = fileRead.read()
 fileRead.close()
-rawdata = [b'\x00']*(len(inputer)+1)
+s=(math.ceil(len(inputer)))
+rawdata = [b'\x00']*(len(inputer)+s)
 for y in range(len(inputer)):
         rawdata[y] =bytes([int(inputer[y])])
+
+########PUT CRC ON THE LIST######
+def GenCCITT_CRC16(Buffer):
+   numBytes = len(Buffer)
+   numBits  = 8
+   crcsum   = 0
+   temp0    = 0
+   temphigh = 0
+
+   polynom = 0x1021
+
+   for byte in range (numBytes):
+      try:
+              temp0  = ord(Buffer[byte])
+      except:
+              print("fail")
+      temp0  <<= 8
+      crcsum ^= temp0
+
+      for bit in range (numBits):
+         crcsum   <<= 1
+         temphigh =   crcsum
+         temphigh &=  0xFFFF0000
+
+         if temphigh > 0:
+            crcsum &= 0x0000FFFF
+            crcsum ^= polynom
+   return(crcsum)
+
+buffer=[]
+temp=0
+if len(rawdata)%2:
+        outputer = [b'\xF0']*int(len(rawdata)+4)
+        print("Upper")
+else:
+        outputer = [b'\xFA']*int(len(rawdata)+4)
+        print("lower")
+print(int((len(outputer))))
+#for x in range(int((len(rawdata)/2))):
+d=0
+f=0
+
+while len(rawdata)>d:
+       buffer=[]
+       buffer.append(rawdata[f])
+       buffer.append(rawdata[f+1])
+       temp= '{:04x}'.format(GenCCITT_CRC16(buffer))
+       g=str(temp)
+       outputer[d+2]=(str(g[0]+g[1])).encode()
+       outputer[d+3]=(str(g[2]+g[3])).encode()
+       outputer[d]=rawdata[f]
+       outputer[d+1]=rawdata[f+1]
+       d+=4
+       f+=2
 print("Loading, compressing and preparing to send takes: {}".format(time.time()-start))
 start = time.time()
 
@@ -61,7 +117,17 @@ ser = serial.Serial("/dev/ttyS0",
                     parity='N',
                     rtscts=False,
                     xonxoff=False)
-for x in range(len(rawdata)):
-    ser.write(rawdata[x])
+
+a=0
+
+for x in range(len(outputer)):
+    ser.write(outputer[x])
+if( (len(outputer)%4)):
+        for x in range(4-(len(outputer)%4)):
+                ser.write(b'\XFF')
+                a=x
+
+print("Time to transmit the image to the receiver: {}".format(time.time()-start))
 ser.close()
-print("The output consists of: {} bytes, transmitted via a: {} baud rate, taking: {} seconds".format(len(rawdata),ser.baudrate,time.time()-start))
+print(len(outputer))
+
